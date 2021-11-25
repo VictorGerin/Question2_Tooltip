@@ -573,7 +573,6 @@ test('Callback onOpen', (done) => {
       <span>teste</span>
     </Tooltip>,
   )
-
   fireEvent.mouseEnter(getByTestId('children'))
   act(() => jest.advanceTimersByTime(400))
 })
