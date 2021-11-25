@@ -26,6 +26,7 @@ function App() {
       }}
     >
       <Tooltip
+        arrow
         content={longText}
         direction="right"
         onOpen={onOpen}

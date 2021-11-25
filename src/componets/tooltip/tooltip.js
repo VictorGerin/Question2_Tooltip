@@ -39,7 +39,7 @@ function getWindowDimensions() {
  *
  */
 function Tooltip(props) {
-  let triagleSize = 12 //px
+  let arrowSize
   let timeoutShow
   let timeoutHide
 
@@ -47,17 +47,18 @@ function Tooltip(props) {
     top: 0,
     left: 0,
   })
-  const [active, setActive] = useState(props.open)
-  const [direction, setdirection] = useState(props.direction)
+  const [active, setActive] = useState(() => props.open)
+  const [direction, setdirection] = useState(() => props.direction)
   const [windowDimensions, setWindowDimensions] = useState(
     getWindowDimensions(),
   ) //holds current hight and widht of the screen
 
-  const divTooltip = useRef(null)
-  const divTopTooltip = useRef(null)
+  const tooltipRef = useRef(null)
+  const wrapperRef = useRef(null)
 
-  if (props.arrow) triagleSize = 12
-  else triagleSize = 0
+  if (props.arrow) arrowSize = 12
+  //px
+  else arrowSize = 0
 
   useEffect(() => setActive(props.open), [props.open])
 
@@ -77,7 +78,7 @@ function Tooltip(props) {
     let timer = 0
 
     //Ignore when not active and while ref has no reference
-    if (!divTooltip.current || !divTopTooltip.current) {
+    if (!tooltipRef.current || !wrapperRef.current) {
       //Set default direction
       setPosition({
         top: 0,
@@ -85,8 +86,8 @@ function Tooltip(props) {
       })
       return
     }
-    const boundingTip = divTooltip.current.getBoundingClientRect()
-    const boundingTopTip = divTopTooltip.current.getBoundingClientRect()
+    const boundingTip = tooltipRef.current.getBoundingClientRect()
+    const boundingWrapper = wrapperRef.current.getBoundingClientRect()
 
     //wait for the windows load properly and rerun
     //There is a possible bug for the webbrowser return zero width
@@ -104,72 +105,68 @@ function Tooltip(props) {
       default:
       case 'top':
         setPosition({
-          top: -boundingTip.height - triagleSize / 2,
-          left: -boundingTip.width / 2 + boundingTopTip.width / 2,
+          top: -boundingTip.height - arrowSize / 2,
+          left: -boundingTip.width / 2 + boundingWrapper.width / 2,
         })
         break
       case 'bottom':
         setPosition({
-          top: boundingTopTip.height + triagleSize / 2,
-          left: -boundingTip.width / 2 + boundingTopTip.width / 2,
+          top: boundingWrapper.height + arrowSize / 2,
+          left: -boundingTip.width / 2 + boundingWrapper.width / 2,
         })
         break
       case 'right':
         setPosition({
-          top: -boundingTip.height / 2 + boundingTopTip.height / 2,
-          left: boundingTopTip.width + triagleSize / 2,
+          top: -boundingTip.height / 2 + boundingWrapper.height / 2,
+          left: boundingWrapper.width + arrowSize / 2,
         })
         break
       case 'left':
         setPosition({
-          top: -boundingTip.height / 2 + boundingTopTip.height / 2,
-          left: -boundingTip.width - triagleSize / 2,
+          top: -boundingTip.height / 2 + boundingWrapper.height / 2,
+          left: -boundingTip.width - arrowSize / 2,
         })
         break
     }
     return () => {
       if (timer !== 0) clearTimeout(timer)
     }
-  }, [active, windowDimensions, direction, props.width, triagleSize])
+  }, [active, direction, props.width, arrowSize])
 
   /**
    * This effect handle the auto change direction to prevent the screen overlap the tooltip
    */
   useEffect(() => {
     //Ignore when not active and while ref has no reference
-    if (!active || !divTooltip.current || props.dissableAutoChangeDirection) {
-      //Set default direction
-      // setdirection(props.direction);
+    if (!active || !tooltipRef.current || props.dissableAutoChangeDirection) {
       return
     }
 
-    const boundingTip = divTooltip.current.getBoundingClientRect()
-    const boundingTopTip = divTopTooltip.current.getBoundingClientRect()
-
-    // console.log('posssss ', direction, windowDimensions, boundingTip, boundingTopTip);
+    const boundingTip = tooltipRef.current.getBoundingClientRect()
+    const boundingWrapper = wrapperRef.current.getBoundingClientRect()
 
     //Change direction if the tooltip go over the scrren
     switch (props.direction) {
       default:
       case 'top':
-        if (boundingTopTip.top - boundingTip.height < 0) setdirection('bottom')
+        if (boundingWrapper.top - boundingTip.height < 0) setdirection('bottom')
         else setdirection('top')
         break
       case 'bottom':
         if (
-          boundingTopTip.bottom + boundingTip.height >
+          boundingWrapper.bottom + boundingTip.height >
           windowDimensions.height
         )
           setdirection('top')
         else setdirection('bottom')
         break
       case 'right':
-        if (boundingTopTip.right + boundingTip.width > windowDimensions.width)
+        if (boundingWrapper.right + boundingTip.width > windowDimensions.width)
           setdirection('left')
         else setdirection('right')
         break
       case 'left':
-        if (boundingTopTip.left - boundingTip.width < 0) setdirection('right')
+        if (boundingWrapper.left - boundingTip.width < 0) setdirection('right')
         else setdirection('left')
         break
     }
@@ -221,7 +218,7 @@ function Tooltip(props) {
   return (
     <div
       data-testid="Tooltip-Wrapper"
-      ref={divTopTooltip}
+      ref={wrapperRef}
       className="Tooltip-Wrapper"
     >
       <div
@@ -237,7 +234,7 @@ function Tooltip(props) {
           onMouseEnter={tipMouseEnter}
           onMouseLeave={tipMouseLeave}
           style={{ top: position.top, left: position.left, width: props.width }}
-          ref={divTooltip}
+          ref={tooltipRef}
           className={`Tooltip-Tip ${direction} ${props.arrow && 'arrow'}`}
         >
           {props.content}
@@ -248,6 +245,7 @@ function Tooltip(props) {
 }
 
 Tooltip.propTypes = {
+  children: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   open: PropTypes.bool,
   arrow: PropTypes.bool,
   dissableAutoChangeDirection: PropTypes.bool,
