@@ -4,10 +4,8 @@ import React from 'react'
 
 function App() {
   let longText = `
-Aliquam eget finibus ante, non facilisis lectus. Sed vitae dignissim est, vel aliquam tellus.
-Praesent non nunc mollis, fermentum neque at, semper arcu.
-Nullam eget est sed sem iaculis gravida eget vitae justo.
-`
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla placerat, lorem nec fermentum placerat, elit libero eleifend turpis, mollis placerat nisl diam ut diam. Maecenas et pretium nunc. Cras molestie lorem mi, sollicitudin auctor ipsum posuere id. Nam blandit tellus in ligula efficitur condimentum. Maecenas tellus lorem, varius eu quam at, rhoncus faucibus sapien. Morbi dapibus a sem ac euismod. Nullam risus justo, ultricies nec rutrum a, fermentum in justo. Aliquam in erat a nibh volutpat condimentum.
+  `
   // longText = `teste`;
 
   let onOpen = () => {
@@ -30,11 +28,10 @@ Nullam eget est sed sem iaculis gravida eget vitae justo.
       <Tooltip
         content={longText}
         direction="right"
-        open
         onOpen={onOpen}
         onClose={onClose}
       >
-        <div style={{ backgroundColor: '#ccc', width: 100, height: 100 }}>
+        <div style={{ backgroundColor: '#444', width: 100, height: 100 }}>
           <span style={{ color: 'white' }}>Teste</span>
         </div>
       </Tooltip>
