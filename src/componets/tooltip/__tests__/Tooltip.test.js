@@ -560,7 +560,7 @@ it('Change tip width', () => {
     </Tooltip>,
   )
 
-  expect(getByTestId('content')).toHaveStyle('width:1001px')
+  expect(getByTestId('content')).toHaveStyle('width:1000px')
 })
 
 test('Callback onOpen', (done) => {
