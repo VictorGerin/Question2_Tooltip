@@ -130,7 +130,7 @@ function Tooltip(props) {
     return () => {
       if (timer !== 0) clearTimeout(timer)
     }
-  }, [active, windowDimensions, direction, props.width])
+  }, [active, windowDimensions, direction, props.width, triagleSize])
 
   /**
    * This effect handle the auto change direction to prevent the screen overlap the tooltip
