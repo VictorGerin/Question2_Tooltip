@@ -41,6 +41,8 @@
     "@babel/preset-react": "^7.16.0",
     "husky": "^7.0.4",
     "jest-dom": "^4.0.0",
+    "prettier": "^2.5.0",
+    "pretty-quick": "^3.1.2",
     "react-test-render": "^1.1.2"
   },
   "jest": {
