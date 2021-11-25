@@ -253,7 +253,7 @@ Tooltip.propTypes = {
   dissableAutoChangeDirection: PropTypes.bool,
   dissableAutoShow: PropTypes.bool,
   disableInteractive: PropTypes.bool,
-  number: PropTypes.number,
+  delay: PropTypes.number,
   width: PropTypes.number,
   direction: PropTypes.oneOf(['top', 'bottom', 'right', 'left']),
   content: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
