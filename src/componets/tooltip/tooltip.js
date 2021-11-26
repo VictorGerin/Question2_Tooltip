@@ -215,6 +215,9 @@ function Tooltip(props) {
     startHideTimer()
   }
 
+  let style = { top: position.top, left: position.left }
+  if (props.width !== 0) style['width'] = props.width
+
   return (
     <div
       data-testid="Tooltip-Wrapper"
@@ -233,7 +236,7 @@ function Tooltip(props) {
           data-testid="content"
           onMouseEnter={tipMouseEnter}
           onMouseLeave={tipMouseLeave}
-          style={{ top: position.top, left: position.left, width: props.width }}
+          style={style}
           ref={tooltipRef}
           className={`Tooltip-Tip ${direction} ${props.arrow && 'arrow'}`}
         >
@@ -264,7 +267,7 @@ Tooltip.defaultProps = {
   direction: 'top',
   onOpen: () => {},
   onClose: () => {},
-  width: 400,
+  width: 150,
   delay: 400,
 }
 
