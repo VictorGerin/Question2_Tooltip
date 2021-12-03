@@ -588,27 +588,24 @@ it('Change tip width', () => {
   expect(getByTestId('content')).toHaveStyle('width:1000px')
 })
 
-test('Callback onOpen', (done) => {
-  const onOnpen = () => {
-    done()
-  }
+test('Callback onOpen', () => {
+  const mockOnOpen = jest.fn()
 
   const { getByTestId } = render(
-    <Tooltip content="this is the tooltip" onOpen={onOnpen}>
+    <Tooltip content="this is the tooltip" onOpen={mockOnOpen}>
       <span>teste</span>
     </Tooltip>,
   )
   fireEvent.mouseEnter(getByTestId('children'))
   act(() => jest.advanceTimersByTime(400))
+  expect(mockOnOpen).toHaveBeenCalled()
 })
 
-test('Callback onClose', (done) => {
-  const onClose = () => {
-    done()
-  }
+test('Callback onClose', () => {
+  const mockOnClose = jest.fn()
 
   const { getByTestId } = render(
-    <Tooltip content="this is the tooltip" onClose={onClose}>
+    <Tooltip content="this is the tooltip" onClose={mockOnClose}>
       <span>teste</span>
     </Tooltip>,
   )
@@ -617,4 +614,5 @@ test('Callback onClose', (done) => {
   act(() => jest.advanceTimersByTime(400))
   fireEvent.mouseLeave(getByTestId('children'))
   act(() => jest.advanceTimersByTime(400))
+  expect(mockOnClose).toHaveBeenCalled()
 })
