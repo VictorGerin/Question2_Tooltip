@@ -178,7 +178,12 @@ it('Change direction on screen overlap (left to right)', () => {
     </div>,
   )
 
-  //Data geted from Opera tested on same senario with screen width and hight 1024x768
+  // Whenever running getBoundingClientRect on test context
+  // all of the dimensions returned equals zero. Therefore
+  // I am mocking the implementation so it returns what I
+  // want for the test sake.
+  // Note: I got these dimensions from the output return from
+  // my Opera browser.
   getByTestId('content').getBoundingClientRect = () => {
     return {
       bottom: 434,
@@ -231,7 +236,12 @@ it('Change direction on screen overlap (right to left)', () => {
     </div>,
   )
 
-  //Data geted from Opera tested on same senario with screen width and hight 1024x768
+  // Whenever running getBoundingClientRect on test context
+  // all of the dimensions returned equals zero. Therefore
+  // I am mocking the implementation so it returns what I
+  // want for the test sake.
+  // Note: I got these dimensions from the output return from
+  // my Opera browser.
   getByTestId('content').getBoundingClientRect = () => {
     return {
       x: 842,
@@ -284,7 +294,12 @@ it('Change direction on screen overlap (top to bottom)', () => {
     </div>,
   )
 
-  //Data geted from Opera tested on same senario with screen width and hight 1024x768
+  // Whenever running getBoundingClientRect on test context
+  // all of the dimensions returned equals zero. Therefore
+  // I am mocking the implementation so it returns what I
+  // want for the test sake.
+  // Note: I got these dimensions from the output return from
+  // my Opera browser.
   getByTestId('content').getBoundingClientRect = () => {
     return {
       x: 484.59375,
@@ -337,7 +352,12 @@ it('Change direction on screen overlap (bottom to top)', () => {
     </div>,
   )
 
-  //Data geted from Opera tested on same senario with screen width and hight 1024x768
+  // Whenever running getBoundingClientRect on test context
+  // all of the dimensions returned equals zero. Therefore
+  // I am mocking the implementation so it returns what I
+  // want for the test sake.
+  // Note: I got these dimensions from the output return from
+  // my Opera browser.
   getByTestId('content').getBoundingClientRect = () => {
     return {
       x: 471,
@@ -396,7 +416,12 @@ it('Not change direction on screen overlap (bottom to top)', () => {
     </div>,
   )
 
-  //Data geted from Opera tested on same senario with screen width and hight 1024x768
+  // Whenever running getBoundingClientRect on test context
+  // all of the dimensions returned equals zero. Therefore
+  // I am mocking the implementation so it returns what I
+  // want for the test sake.
+  // Note: I got these dimensions from the output return from
+  // my Opera browser.
   getByTestId('content').getBoundingClientRect = () => {
     return {
       x: 471,

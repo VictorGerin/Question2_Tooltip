@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react'
-import './tooltip.css'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 import PropTypes from 'prop-types'
+import './tooltip.css'
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window
@@ -40,8 +40,6 @@ function getWindowDimensions() {
  */
 function Tooltip(props) {
   let arrowSize
-  let timeoutShow
-  let timeoutHide
 
   const [position, setPosition] = useState({
     top: 0,
@@ -49,15 +47,28 @@ function Tooltip(props) {
   })
   const [active, setActive] = useState(() => props.open)
   const [direction, setdirection] = useState(() => props.direction)
-  const [windowDimensions, setWindowDimensions] = useState(
-    getWindowDimensions(),
-  ) //holds current hight and widht of the screen
+  //holds current hight and widht of the screen
+  const [windowDimensions, setWindowDimensions] = useState(getWindowDimensions)
 
+  //Reference to get the tooltip and wrapper Doms
   const tooltipRef = useRef(null)
   const wrapperRef = useRef(null)
 
+  //References used by the timers
+  const timerRef = useRef({
+    timers: {},
+  })
+
+  useEffect(() => {
+    let timers = timerRef.current.timers
+    return () => {
+      clearTimeout(timers.timeoutHide)
+      clearTimeout(timers.timeoutShow)
+    }
+  }, [])
+
+  //Arrow size in pixels
   if (props.arrow) arrowSize = 12
-  //px
   else arrowSize = 0
 
   useEffect(() => setActive(props.open), [props.open])
@@ -75,62 +86,34 @@ function Tooltip(props) {
    * This effect handle the possition of the tooltip based on direction
    */
   useEffect(() => {
-    let timer = 0
-
-    //Ignore when not active and while ref has no reference
+    //Ignore when ref has no reference
     if (!tooltipRef.current || !wrapperRef.current) {
-      //Set default direction
-      setPosition({
-        top: 0,
-        left: 0,
-      })
       return
     }
     const boundingTip = tooltipRef.current.getBoundingClientRect()
     const boundingWrapper = wrapperRef.current.getBoundingClientRect()
 
-    //wait for the windows load properly and rerun
-    //There is a possible bug for the webbrowser return zero width
-    //tested on Opera
-    // if(boundingTopTip.width === 0)
-    // {
-    //   timer = setTimeout(() => {
-    //     setActive(active);
-    //   }, 1)
-    //   return;
-    // }
+    let directions = {
+      top: {
+        top: -boundingTip.height - arrowSize / 2,
+        left: -boundingTip.width / 2 + boundingWrapper.width / 2,
+      },
+      bottom: {
+        top: boundingWrapper.height + arrowSize / 2,
+        left: -boundingTip.width / 2 + boundingWrapper.width / 2,
+      },
+      right: {
+        top: -boundingTip.height / 2 + boundingWrapper.height / 2,
+        left: boundingWrapper.width + arrowSize / 2,
+      },
+      left: {
+        top: -boundingTip.height / 2 + boundingWrapper.height / 2,
+        left: -boundingTip.width - arrowSize / 2,
+      },
+    }
 
     //Change direction if the tooltip go over the scrren
-    switch (direction) {
-      default:
-      case 'top':
-        setPosition({
-          top: -boundingTip.height - arrowSize / 2,
-          left: -boundingTip.width / 2 + boundingWrapper.width / 2,
-        })
-        break
-      case 'bottom':
-        setPosition({
-          top: boundingWrapper.height + arrowSize / 2,
-          left: -boundingTip.width / 2 + boundingWrapper.width / 2,
-        })
-        break
-      case 'right':
-        setPosition({
-          top: -boundingTip.height / 2 + boundingWrapper.height / 2,
-          left: boundingWrapper.width + arrowSize / 2,
-        })
-        break
-      case 'left':
-        setPosition({
-          top: -boundingTip.height / 2 + boundingWrapper.height / 2,
-          left: -boundingTip.width - arrowSize / 2,
-        })
-        break
-    }
-    return () => {
-      if (timer !== 0) clearTimeout(timer)
-    }
+    setPosition(directions[direction])
   }, [active, direction, props.width, arrowSize])
 
   /**
@@ -181,39 +164,42 @@ function Tooltip(props) {
   /**
    * Start timer to show the tooltip
    */
-  const startShowTimer = () => {
+  const startShowTimer = useCallback(() => {
     if (props.dissableAutoShow) return
 
-    clearInterval(timeoutHide)
-    timeoutShow = setTimeout(() => {
+    let timers = timerRef.current.timers
+
+    clearTimeout(timers.timeoutHide)
+    timers.timeoutShow = setTimeout(() => {
       setActive(true)
       props.onOpen()
     }, props.delay)
-  }
+  }, [props])
 
   /**
    * Start timer to hide the tooltip
    */
-  const startHideTimer = () => {
+  const startHideTimer = useCallback(() => {
     if (props.dissableAutoShow) return
 
-    clearInterval(timeoutShow)
-    timeoutHide = setTimeout(() => {
-      const oldActive = active
+    let timers = timerRef.current.timers
+
+    clearTimeout(timers.timeoutShow)
+    timers.timeoutHide = setTimeout(() => {
       setActive(false)
-      if (oldActive) props.onClose()
+      if (active) props.onClose()
     }, props.delay)
-  }
+  }, [props, active])
 
-  const tipMouseEnter = () => {
+  const tipMouseEnter = useCallback(() => {
     if (props.disableInteractive) return
-    clearInterval(timeoutHide)
-  }
+    clearTimeout(timerRef.current.timers.timeoutHide)
+  }, [props])
 
-  const tipMouseLeave = () => {
+  const tipMouseLeave = useCallback(() => {
     if (props.disableInteractive) return
     startHideTimer()
-  }
+  }, [props, startHideTimer])
 
   let style = { top: position.top, left: position.left }
   if (props.width !== 0) style['width'] = props.width
